@@ -64,7 +64,7 @@ namespace OdooSample
             foreach (var record in data.ToList())
             {                
                 var image = "";
-                if ((bool) record.GetValue("image_medium"))
+                if (!(bool) record.GetValue("image_medium"))
                 {
                   var image = record.GetValue("image_medium").ToString();
                 }
