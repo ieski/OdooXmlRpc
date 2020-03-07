@@ -38,7 +38,7 @@ namespace OdooSample
                 var image = "";
                 if (!(bool) record.GetValue("image_medium"))
                 {
-                    var image = record.GetValue("image_medium").ToString();
+                    image = record.GetValue("image_medium").ToString();
                 }
                 
                 if (image.Length <= 0) continue;
