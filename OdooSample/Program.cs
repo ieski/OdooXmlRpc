@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Odoo.Concrete;
 using System;
+using System.Linq;
+
 
 namespace OdooSample
 {
@@ -10,7 +12,6 @@ namespace OdooSample
 
         static void Main(string[] args)
         {
-          
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
@@ -18,19 +19,33 @@ namespace OdooSample
             var rpcConnnectionSettings = new RpcConnectionSetting();
             config.GetSection("OdooConnection").Bind(rpcConnnectionSettings);
 
-
             var odooConn = new RpcConnection(rpcConnnectionSettings);
-            var rpcContext = new RpcContext(odooConn, "res.partner");
 
-            rpcContext.RpcFilter
-                .Equal("id", 10);
+
+            var rpcContext = new RpcContext(odooConn, "hr.employee");
+
+            rpcContext
+                .RpcFilter.NotEqual("x_emp_uniqueid", false);
 
             rpcContext
                 .AddField("id")
-                .AddField("name");
+                .AddField("image_medium");
 
             var data = rpcContext.Execute(true);
 
+            foreach (var record in data.ToList())
+            {
+                var image = "";
+                if (!(bool) record.GetValue("image_medium"))
+                {
+                    var image = record.GetValue("image_medium").ToString();
+                }
+                
+                if (image.Length <= 0) continue;
+
+                var id = record.GetValue("id").ToString();
+
+            }
 
             Console.ReadLine();
 
