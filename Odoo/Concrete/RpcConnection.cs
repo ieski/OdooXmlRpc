@@ -24,25 +24,34 @@ namespace Odoo.Concrete
 
         public bool Login()
         {
-            if (_rpcConnectionSchema.UserId != -1) return true;
-
-            var loginRpc = XmlRpcProxyGen.Create<ICommonRpc>();
-            loginRpc.Url = _rpcConnectionSchema.CommonUrl;
-
-            if (_rpcConnectionSetting.ServerCertificateValidation)
+            try
             {
-                ServicePointManager.ServerCertificateValidationCallback = CheckValidationResult;
+                if (_rpcConnectionSchema.UserId != -1) return true;
+
+                var loginRpc = XmlRpcProxyGen.Create<ICommonRpc>();
+                loginRpc.Url = _rpcConnectionSchema.CommonUrl;
+
+                if (_rpcConnectionSetting.ServerCertificateValidation)
+                {
+                    ServicePointManager.ServerCertificateValidationCallback = CheckValidationResult;
+                }
+
+                // Log in and get user id
+                _rpcConnectionSchema.UserId = loginRpc.authenticate(_rpcConnectionSchema.DbName, _rpcConnectionSchema.DbUser, _rpcConnectionSchema.DbPassword,  new object() );
+
+                // Create proxy for Object operations
+                _objectRpc = XmlRpcProxyGen.Create<IObjectRpc>();
+                _objectRpc.Url = _rpcConnectionSchema.ObjectUrl;
+                _objectRpc.NonStandard = XmlRpcNonStandard.AllowStringFaultCode;
+                _objectRpc.EnableCompression = false;
+
+                return true;
             }
-
-            // Log in and get user id
-            _rpcConnectionSchema.UserId = loginRpc.login(_rpcConnectionSchema.DbName, _rpcConnectionSchema.DbUser, _rpcConnectionSchema.DbPassword);
-
-            // Create proxy for Object operations
-            _objectRpc = XmlRpcProxyGen.Create<IObjectRpc>();
-            _objectRpc.Url = _rpcConnectionSchema.ObjectUrl;
-            _objectRpc.NonStandard = XmlRpcNonStandard.AllowStringFaultCode;
-            _objectRpc.EnableCompression = false;
-            return true;
+            catch (Exception e)
+            {
+                _rpcConnectionSchema.UserId = -1;
+                return false;
+            }
         }
 
         private bool CheckValidationResult(object sender, X509Certificate certificate, X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
