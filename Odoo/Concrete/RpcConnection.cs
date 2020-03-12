@@ -1,4 +1,6 @@
-﻿using System.Net;
+using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using CookComputing.XmlRpc;
 using Odoo.Abstract;
@@ -56,7 +58,6 @@ namespace Odoo.Concrete
 
         private bool CheckValidationResult(object sender, X509Certificate certificate, X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
         {
-            // Implement Server Certificate validation logic here, if needed.
             return true;
         }
 
@@ -67,21 +68,35 @@ namespace Odoo.Concrete
 
         public int[] Search(string model, object[] filter, int? offset = null, int? limit = null)
         {
-            if (offset == null || limit == null)
+            if (offset != null && limit != null)
             {
-                return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter);
+                return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter, (int)offset, (int)limit);
             }
-            return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter, (int)offset, (int)limit);
+            if (offset == null && limit != null)
+            {
+                return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter, 0, (int)limit);
+            }
+            return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter);            
         }
 
         public object[] SearchAndRead(string model, object[] filter, object[] fields, int? offset = null, int? limit = null)
         {
-            if (offset == null || limit == null)
+            if (offset != null && limit != null)
             {
-                return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields);
+                return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, (int)offset, (int)limit);
+            }
+            
+            if (offset == null && limit != null)
+            {
+                return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, 0, (int)limit);
             }
 
-            return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, (int)offset, (int)limit);
+            return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields);            
+        }
+
+        public object GetFields(string model, object[] attributes)
+        {
+            return _objectRpc.fields_get(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "fields_get", new object[] { }, attributes);
         }
 
         public int Count(string model, object[] filter)
@@ -112,11 +127,6 @@ namespace Odoo.Concrete
         public string Render_Report(string report, int id)
         {
             return _objectRpc.render_report(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, report, id);
-        }
-
-        public RpcModel GetModel(string model)
-        {
-            return new RpcModel(model, this);
         }
     }
 }
