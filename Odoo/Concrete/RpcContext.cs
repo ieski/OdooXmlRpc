@@ -1,50 +1,44 @@
 ﻿﻿using CookComputing.XmlRpc;
-using Odoo.Model;
-using System.Collections;
+ using System.Collections;
 using System.Collections.Generic;
+ using System.Linq;
 
-namespace Odoo.Concrete
+ namespace Odoo.Concrete
 {
     public class RpcContext
     {
-        protected readonly RpcConnection _rpcConnection;
-        private readonly string _modelName;
-        private RpcModel _rpcModel;
-        private List<RpcRecord> _records;
-
-        public List<string> FieldNames { get; set; }
-        public RpcFilter RpcFilter { get; set; }
+        private readonly RpcConnection _rpcConnection;
+        private readonly RpcModel _rpcModel;
+        private List<string> _fieldNames;
+        
+        public RpcFilter RpcFilter { get;}
+        private List<RpcRecord> _records { get; set; }
 
         public RpcContext(RpcConnection rpcConnection, string modelName)
         {
             _rpcConnection = rpcConnection;
-            _modelName = modelName;
-            RpcFilter = new RpcFilter();
-            FieldNames = new List<string>();
-            _rpcModel = new RpcModel(_modelName, _rpcConnection);
+            _rpcModel = new RpcModel(modelName, _rpcConnection);
+            
             _records = new List<RpcRecord>();
+            RpcFilter = new RpcFilter();
+            _fieldNames = new List<string>();
         }
 
-        public string ModelName => _modelName;
-        public List<RpcRecord> Records => _records;
-
-        public RpcConnection Connection => _rpcConnection;
-        public List<FieldAttribute> GetFields()
+        private List<RpcField> GetFields()
         {
-            if (!_rpcConnection.Login())
-            {
-                _rpcConnection.Login();
-            }
+            if (!_rpcConnection.Login()) _rpcConnection.Login();
 
-            var result = (XmlRpcStruct)_rpcModel.GetFields();
+            object[] filter = _fieldNames.ToArray();
 
-            var fields = new List<FieldAttribute>();
+            var result = (XmlRpcStruct)_rpcModel.GetFields(filter);
+
+            var fields = new List<RpcField>();
 
             foreach (DictionaryEntry entry in result)
             {
                 var fieldAttribute = (XmlRpcStruct) entry.Value;
 
-                fields.Add(new FieldAttribute
+                fields.Add(new RpcField
                 {
                     FieldName = entry.Key.ToString(),
                     Type = fieldAttribute.ContainsKey("type") ? fieldAttribute["type"].ToString() : "",
@@ -56,25 +50,29 @@ namespace Odoo.Concrete
             return fields;
         }
 
-        /// <summary>
-        ///     Read parametresini True atarsan ODOO üzerinde READ işleminide yapar
-        /// </summary>
-        /// <param name="read"></param>
-        /// <param name="offset"></param>
-        /// <param name="limit"></param>
-        /// <returns></returns>
-        public List<RpcRecord> Execute(bool read = false, int offset = 0, int? limit = null)
+        public IEnumerable<RpcRecord> Execute(bool read = false, int offset = 0, int? limit = null)
         {
             if (!_rpcConnection.Login()) _rpcConnection.Login();
 
-            _rpcModel.AddFields(FieldNames);
+            var fieldsResult = GetFields();
+            
+            if (_fieldNames.Count == 0)
+            {
+                _fieldNames = fieldsResult.Select(f => f.FieldName).ToList(); 
+            }
+            
+            _rpcModel.AddFields(_fieldNames);
 
-            _records = !read? _rpcModel.Search(RpcFilter.ToArray()) : _rpcModel.SearchAndRead(RpcFilter.ToArray(), offset, limit);
-            return _records;
+            return _records = !read? _rpcModel.Search(RpcFilter.ToArray()) : _rpcModel.SearchAndRead(RpcFilter.ToArray(), fieldsResult, offset, limit);
         }
 
+        public List<RpcRecord> GetRecords()
+        {
+            return _records;
+        }
+        
         /// <summary>
-        /// Toplam kayıt sayısı
+        /// Total record count
         /// </summary>
         /// <returns></returns>
         public int Count()
@@ -85,17 +83,16 @@ namespace Odoo.Concrete
 
             return _rpcModel.Count(filter);
         }
-
       
         public RpcContext AddField(string fieldName)
         {
-            FieldNames.Add(fieldName);
+            _fieldNames.Add(fieldName);
             return this;
         }
 
-        public RpcContext AddFields(List<string> fieldsName)
+        public RpcContext AddFields(IEnumerable<string> fieldsName)
         {
-            FieldNames.AddRange(fieldsName);
+            _fieldNames.AddRange(fieldsName);
             return this;
         }
 

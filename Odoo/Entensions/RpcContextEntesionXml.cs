@@ -7,14 +7,18 @@ namespace Odoo.Entensions
     {
         public static XElement ToXml(this RpcContext context)
         {
-            var root = new XElement(context.ModelName);
+            var root = new XElement("records");
 
-            foreach (var record in context.Records)
+            foreach (var record in context.GetRecords())
             {
-                var element = new XElement("Item");
+                var element = new XElement("Record");
                 foreach (var field in record.GetFields())
                 {
-                    element.Add(new XAttribute(field.Key, field.Value));
+                    element.Add(new XAttribute("FieldName", field.FieldName));
+                    element.Add(new XAttribute("Value", field.Value));
+                    element.Add(new XAttribute("Type", field.Type));
+                    element.Add(new XAttribute("String", field.String));
+                    element.Add(new XAttribute("Help", field.Help));
                 }
                 root.Add(element);
             }

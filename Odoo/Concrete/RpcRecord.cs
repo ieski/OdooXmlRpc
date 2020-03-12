@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using CookComputing.XmlRpc;
 
 namespace Odoo.Concrete
@@ -7,50 +9,67 @@ namespace Odoo.Concrete
     {
         private readonly RpcConnection _rpcConnection;
         private readonly string _model;
-        private readonly Dictionary<string, object> _fields = new Dictionary<string, object>();
-        private readonly List<string> _modifiedFields = new List<string>();
-        int _id = -1;
+        private readonly List<RpcField> _fieldsResult;
+        private int _id = -1;
 
-        public RpcRecord(RpcConnection rpcConnection, string model, int id)
+        public int Id => _id;
+
+        public RpcRecord(RpcConnection rpcConnection, string model, int? id, IEnumerable<RpcField> fieldsTemplate,
+            XmlRpcStruct vals = null)
         {
             _model = model;
             _rpcConnection = rpcConnection;
-            _id = id;
-        }
-
-        public Dictionary<string, object> GetFields()
-        {
-            return _fields;
-        }
-
-        public bool SetValue(string field, object value)
-        {
-            if (_fields.ContainsKey(field))
+            if (id == null)
             {
-                if (!_modifiedFields.Contains(field))
-                {
-                    _modifiedFields.Add(field);
-                }
-
-                _fields[field] = value;
+                _id = -1;
             }
             else
             {
-                _fields.Add(field, value);
+                _id = (int) id;
             }
-            return true;
+
+            if (id != null)
+            {
+                _fieldsResult = new List<RpcField>();
+                foreach (var rpcField in fieldsTemplate)
+                {
+                    _fieldsResult.Add(new RpcField
+                    {
+                        FieldName = rpcField.FieldName,
+                        Type = rpcField.Type,
+                        String = rpcField.String,
+                        Help = rpcField.Help,
+                        Changed = false,
+                        Value = vals?[rpcField.FieldName]
+                    });
+                }
+            }
+            else
+            {
+                _fieldsResult = fieldsTemplate.ToList();
+            }
         }
 
-        public object GetValue(string field)
+        public IEnumerable<RpcField> GetFields()
         {
-            if (!_fields.ContainsKey(field)) return null;
-
-            if (_fields[field] is bool && !(bool)_fields[field]) return null;
-
-            return _fields[field];
+            return _fieldsResult;
         }
 
-        public int Id => _id;
+        public void SetFieldValue(string field, object value)
+        {
+            var fieldAttribute = _fieldsResult.FirstOrDefault(f => f.FieldName == field);
+            if (fieldAttribute == null) return;
+
+            fieldAttribute.Changed = fieldAttribute.Changed == false;
+
+            fieldAttribute.Value = value;
+        }
+
+        public RpcField GetField(string field)
+        {
+            var fieldAttribute = _fieldsResult.FirstOrDefault(f => f.FieldName == field);
+            return fieldAttribute;
+        }
 
         public void Save()
         {
@@ -58,22 +77,33 @@ namespace Odoo.Concrete
 
             if (_id >= 0)
             {
-                foreach (var field in _modifiedFields)
+                foreach (var field in _fieldsResult.Where(f => (bool) f.Changed))
                 {
-                    values[field] = _fields[field];
+                    values[field.FieldName] = field.Value;
                 }
 
-                _rpcConnection.Write(_model, new int[1] { _id }, values);
+                _rpcConnection.Write(_model, new int[1] {_id}, values);
             }
             else
             {
-                foreach (var field in _fields.Keys)
+                foreach (var field in _fieldsResult)
                 {
-                    values[field] = _fields[field];
+                    values[field.FieldName] = field.Value;
                 }
 
                 _id = _rpcConnection.Create(_model, values);
             }
+        }
+
+        public override string ToString()
+        {
+            var value = "";
+            foreach (var field in _fieldsResult)
+            {
+                value += $"{field.FieldName}: {field.Value} \n";
+            }
+
+            return value;
         }
     }
 }

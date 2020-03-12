@@ -22,7 +22,7 @@ namespace Odoo.Abstract
         object[] search_read(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] fields);
 
         [XmlRpcMethod("execute")]
-        object fields_get(string dbName, int userId, string dbPwd, string model, string method, object[] emptyList, object[] attributes);
+        object fields_get(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] attributes);
 
         [XmlRpcMethod("execute")]
         int search_count(string dbName, int userId, string dbPwd, string model, string method, object[] filter);

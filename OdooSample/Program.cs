@@ -1,16 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Odoo.Concrete;
 using System;
-using System.Linq;
-using System.Reflection.Metadata;
-
+using System.Collections.Generic;
 
 namespace OdooSample
 {
     class Program
     {
-        private static readonly IServiceProvider ServiceProvider;
-
         static void Main(string[] args)
         {
             IConfiguration config = new ConfigurationBuilder()
@@ -21,39 +17,53 @@ namespace OdooSample
             config.GetSection("OdooConnection").Bind(rpcConnnectionSettings);
 
             var odooConn = new RpcConnection(rpcConnnectionSettings);
-            var rpcContext = new RpcContext(odooConn, "hr.employee");
+            var rpcContext = new RpcContext(odooConn, "res.partner");
 
-            rpcContext
-                .RpcFilter.Equal("id", 1458);
-
-            var fields = rpcContext.GetFields();
-            foreach (var field in fields)
-            {
-                rpcContext.AddField(field.FieldName);
-            }
-            rpcContext.AddFields(fields.Select(f => f.FieldName).ToList());
             
+            //Query Parameter
+            rpcContext
+                .RpcFilter
+                .Or()
+                .Equal("id", 1)
+                .Equal("id", 14383);
+
+            
+            //Returns all fields if fields are not selected
             rpcContext
                 .AddField("id")
-                .AddField("image_medium");
+                .AddField("name")
+                .AddField("mobile")
+                .AddField("phone");
 
             var data = rpcContext.Execute(true, limit:5);
 
-            foreach (var record in data.ToList())
+            foreach (var record in data)
             {
-                var image = "";
-                if (record.GetValue("image_medium") != null)
-                {
-                    image = record.GetValue("image_medium").ToString();
-                }
+                var id = record.GetField("id");
+                var  name = record.GetField("name");
+                var  mobile = record.GetField("mobile");
+                var  phone = record.GetField("phone");
                 
-                if (image.Length <= 0) continue;
-
-                var id = record.GetValue("id").ToString();
+                Console.WriteLine(record.GetField("id"));
+                Console.WriteLine(record);
+                
+                // Update Record
+                record.SetFieldValue("mobile","xxx-xxx-xx");
+                record.Save();
             }
 
+            
+            //New Record
+            var fields = new List<RpcField>
+            {
+                new RpcField {FieldName = "name", Value = 1},
+                new RpcField {FieldName = "website", Value = "www.odootr.com"},
+            };
+            var newRecord = new RpcRecord(odooConn,"res.partner",null, fields);
+            newRecord.Save();
+            
+            
             Console.ReadLine();
-
         }
     }
 }

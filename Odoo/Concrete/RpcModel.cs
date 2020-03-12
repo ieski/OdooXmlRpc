@@ -2,7 +2,7 @@
 using System.Linq;
 using CookComputing.XmlRpc;
 
-namespace Odoo.Concrete
+ namespace Odoo.Concrete
 {
     public class RpcModel
     {
@@ -23,12 +23,12 @@ namespace Odoo.Concrete
             return count;
         }
 
-        public object GetFields()
+        public object GetFields(object[] filter)
         {
-            return _rpcConnection.GetFields(_modelName, new object[] { "string", "help", "type" });
+            return _rpcConnection.GetFields(_modelName, filter , new object[] { "string", "help", "type" });
         }
 
-        public List<RpcRecord> SearchAndRead(object[] filter, int offset = 0, int? limit = null)
+        public List<RpcRecord> SearchAndRead(object[] filter, List<RpcField> fieldsResult, int offset = 0, int? limit = null)
         {
             var records = new List<RpcRecord>();
 
@@ -37,19 +37,10 @@ namespace Odoo.Concrete
             foreach (object entry in result)
             {
                 var vals = (XmlRpcStruct)entry;
-
-                // Get ID
-                int id = (int)vals["id"];
-                var record = new RpcRecord(_rpcConnection, _modelName, id);
-
-                // Get other values
-                foreach (var field in _fields.Where(field => vals.ContainsKey(field)))
-                {
-                    record.SetValue(field, vals[field]);
-                }
+                var id = (int)vals["id"];
+                var record = new RpcRecord(_rpcConnection, _modelName, id, fieldsResult, vals);
                 records.Add(record);
             }
-
             return records;
         }
 
@@ -57,7 +48,9 @@ namespace Odoo.Concrete
         {
             var ids = _rpcConnection.Search(_modelName, filter);
 
-            return ids.Select(id => new RpcRecord(_rpcConnection, _modelName, id)).ToList();
+            return ids
+                .Select(id => new RpcRecord(_rpcConnection, _modelName, id, null, null))
+                .ToList();
         }
 
         public void AddField(string field)
@@ -106,7 +99,7 @@ namespace Odoo.Concrete
 
         public RpcRecord CreateNew()
         {
-            return new RpcRecord(_rpcConnection, _modelName, -1);
+            return new RpcRecord(_rpcConnection, _modelName, -1,null,null);
         }
     }
 }

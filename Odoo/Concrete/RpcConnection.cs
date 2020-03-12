@@ -83,9 +83,9 @@ namespace Odoo.Concrete
             return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, offset, (int)limit);
         }
 
-        public object GetFields(string model, object[] attributes)
+        public object GetFields(string model, object[] filter, object[] attributes)
         {
-            return _objectRpc.fields_get(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "fields_get", new object[] { }, attributes);
+            return _objectRpc.fields_get(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "fields_get", filter, attributes);
         }
 
         public int Count(string model, object[] filter)
