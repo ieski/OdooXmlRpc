@@ -22,14 +22,8 @@
         public string DbPassword { get; }
         public int UserId
         {
-            get
-            {
-                return _UserId;
-            }
-            set
-            {
-                _UserId = value;
-            }
+            get => _UserId;
+            set => _UserId = value;
         }
 
         public string CommonUrl => $"{ServerUrl}/{SuffixHost}/{Common}";

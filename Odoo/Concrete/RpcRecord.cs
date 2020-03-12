@@ -44,6 +44,7 @@ namespace Odoo.Concrete
         public object GetValue(string field)
         {
             if (!_fields.ContainsKey(field)) return null;
+
             if (_fields[field] is bool && !(bool)_fields[field]) return null;
 
             return _fields[field];

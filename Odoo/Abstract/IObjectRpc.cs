@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using CookComputing.XmlRpc;
 
 namespace Odoo.Abstract

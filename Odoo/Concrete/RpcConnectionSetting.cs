@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Odoo.Concrete
+﻿namespace Odoo.Concrete
 {
     public class RpcConnectionSetting
     {

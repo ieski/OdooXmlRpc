@@ -1,11 +1,7 @@
-using CookComputing.XmlRpc;
+﻿﻿using CookComputing.XmlRpc;
 using Odoo.Model;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Odoo.Concrete
 {
