@@ -66,32 +66,22 @@ namespace Odoo.Concrete
             return _objectRpc.create(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "create", fieldValues);
         }
 
-        public int[] Search(string model, object[] filter, int? offset = null, int? limit = null)
+        public int[] Search(string model, object[] filter, int offset = 0, int? limit = null)
         {
-            if (offset != null && limit != null)
+            if (limit == null)
             {
-                return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter, (int)offset, (int)limit);
+                return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter);    
             }
-            if (offset == null && limit != null)
-            {
-                return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter, 0, (int)limit);
-            }
-            return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter);            
+            return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter, offset, (int)limit);
         }
 
-        public object[] SearchAndRead(string model, object[] filter, object[] fields, int? offset = null, int? limit = null)
+        public object[] SearchAndRead(string model, object[] filter, object[] fields, int offset = 0, int? limit = null)
         {
-            if (offset != null && limit != null)
+            if (limit == null)
             {
-                return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, (int)offset, (int)limit);
+                return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields);
             }
-            
-            if (offset == null && limit != null)
-            {
-                return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, 0, (int)limit);
-            }
-
-            return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields);            
+            return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, offset, (int)limit);
         }
 
         public object GetFields(string model, object[] attributes)
