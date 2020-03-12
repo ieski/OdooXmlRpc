@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CookComputing.XmlRpc;
 
@@ -23,11 +23,14 @@ namespace Odoo.Concrete
             return count;
         }
 
-        public List<RpcRecord> SearchAndRead(object[] filter, int? offset = null, int? limit = null)
+        public object GetFields()
+        {
+            return _rpcConnection.GetFields(_modelName, new object[] { "string", "help", "type" });
+        }
+
+        public List<RpcRecord> SearchAndRead(object[] filter, int offset = 0, int? limit = null)
         {
             var records = new List<RpcRecord>();
-
-            //int[] ids = _rpcConnection.Search(_modelName, filter, offset, limit);
 
             object[] result = _rpcConnection.SearchAndRead(_modelName, filter, _fields.ToArray(), offset, limit);
 
@@ -49,7 +52,7 @@ namespace Odoo.Concrete
 
             return records;
         }
-        
+
         public List<RpcRecord> Search(object[] filter)
         {
             var ids = _rpcConnection.Search(_modelName, filter);
