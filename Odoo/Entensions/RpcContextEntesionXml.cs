@@ -14,11 +14,7 @@ namespace Odoo.Entensions
                 var element = new XElement("Record");
                 foreach (var field in record.GetFields())
                 {
-                    element.Add(new XAttribute("FieldName", field.FieldName));
-                    element.Add(new XAttribute("Value", field.Value));
-                    element.Add(new XAttribute("Type", field.Type));
-                    element.Add(new XAttribute("String", field.String));
-                    element.Add(new XAttribute("Help", field.Help));
+                    element.Add(new XAttribute(field.FieldName,  field.Value));
                 }
                 root.Add(element);
             }

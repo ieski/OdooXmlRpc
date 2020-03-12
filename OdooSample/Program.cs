@@ -2,6 +2,7 @@
 using Odoo.Concrete;
 using System;
 using System.Collections.Generic;
+using Odoo.Entensions;
 
 namespace OdooSample
 {
@@ -61,7 +62,8 @@ namespace OdooSample
             };
             var newRecord = new RpcRecord(odooConn,"res.partner",null, fields);
             newRecord.Save();
-            
+
+            var a = rpcContext.ToXml();
             
             Console.ReadLine();
         }
