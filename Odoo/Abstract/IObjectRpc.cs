@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CookComputing.XmlRpc;
 
 namespace Odoo.Abstract
@@ -11,15 +11,18 @@ namespace Odoo.Abstract
 
         [XmlRpcMethod("execute")]
         int[] search(string dbName, int userId, string dbPwd, string model, string method, object[] filter, int offset, int limit);
-
+        
         [XmlRpcMethod("execute")]
         int[] search(string dbName, int userId, string dbPwd, string model, string method, object[] filter);
 
         [XmlRpcMethod("execute")]
         object[] search_read(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] fields, int offset, int limit);
-
+        
         [XmlRpcMethod("execute")]
         object[] search_read(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] fields);
+
+        [XmlRpcMethod("execute")]
+        object fields_get(string dbName, int userId, string dbPwd, string model, string method, object[] emptyList, object[] attributes);
 
         [XmlRpcMethod("execute")]
         int search_count(string dbName, int userId, string dbPwd, string model, string method, object[] filter);
@@ -38,5 +41,6 @@ namespace Odoo.Abstract
 
         [XmlRpcMethod("render_report")]
         string render_report(string dbName, int userId, string dbPwd, string report, int ids);
+
     }
 }
