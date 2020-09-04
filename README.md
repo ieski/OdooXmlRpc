@@ -77,3 +77,60 @@ namespace OdooSample
     }
 }
 ```
+
+
+Example Write and Create res.partner
+-------------------------
+- Source:
+
+```cs
+using Microsoft.Extensions.Configuration;
+using Odoo.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace OdooSample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+
+            var rpcConnnectionSettings = new RpcConnectionSetting();
+            config.GetSection("OdooConnection").Bind(rpcConnnectionSettings);
+
+            var odooConn = new RpcConnection(rpcConnnectionSettings);
+
+            //res.partner - Write
+            var partner = new RpcContext(odooConn, "res.partner");
+
+            partner.AddFields(new[] {"name", "phone", "email"});
+            partner.RpcFilter.Equal("name", "ismail eski");
+            var results = partner.Execute(true);
+            foreach (var result in results)
+            {
+                result.SetFieldValue("phone", "55-66-666");
+                result.Save();
+            }
+
+
+            //res.partner - Create
+            RpcRecord record = new RpcRecord(odooConn, "res.partner", -1, new List<RpcField>
+            {
+                new RpcField{FieldName = "name"},
+                new RpcField{FieldName = "phone"},
+                new RpcField{FieldName = "email"}
+            });
+            record.SetFieldValue("name", "ismail eski");
+            record.SetFieldValue("phone", "111-222-333");
+            record.SetFieldValue("email", "ismaileski@gmail.com");
+            record.Save();
+        }
+    }
+}
+```
+
