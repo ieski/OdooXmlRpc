@@ -110,7 +110,8 @@ namespace OdooSample
 
             partner.AddFields(new[] {"name", "phone", "email"});
             partner.RpcFilter.Equal("name", "ismail eski");
-            var results = partner.Execute(true);
+            var results = partner.Execute(false,  order:"id desc");
+            //var results = partner.Execute(false, offset:1, limit:2, order: "id desc");
             foreach (var result in results)
             {
                 result.SetFieldValue("phone", "55-66-666");
