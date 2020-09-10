@@ -28,11 +28,11 @@ using CookComputing.XmlRpc;
             return _rpcConnection.GetFields(_modelName, filter , new object[] { "string", "help", "type" });
         }
 
-        public List<RpcRecord> SearchAndRead(object[] filter, List<RpcField> fieldsResult, int offset = 0, int? limit = null)
+        public List<RpcRecord> SearchAndRead(object[] filter, List<RpcField> fieldsResult, int offset = 0, int limit = 0, string order="")
         {
             var records = new List<RpcRecord>();
 
-            object[] result = _rpcConnection.SearchAndRead(_modelName, filter, _fields.ToArray(), offset, limit);
+            object[] result = _rpcConnection.SearchAndRead(_modelName, filter, _fields.ToArray(), offset, limit, order);
 
             foreach (object entry in result)
             {
@@ -44,9 +44,9 @@ using CookComputing.XmlRpc;
             return records;
         }
 
-        public List<RpcRecord> Search(object[] filter)
+        public List<RpcRecord> Search(object[] filter, int offset = 0, int limit = 0, string order = "")
         {
-            var ids = _rpcConnection.Search(_modelName, filter);
+            var ids = _rpcConnection.Search(_modelName, filter, offset, limit, order);
 
             return ids
                 .Select(id => new RpcRecord(_rpcConnection, _modelName, id, null, null))
@@ -95,11 +95,6 @@ using CookComputing.XmlRpc;
         public void Save(RpcRecord rpcRecord)
         {
             Save(new List<RpcRecord>() { rpcRecord });
-        }
-
-        public RpcRecord CreateNew()
-        {
-            return new RpcRecord(_rpcConnection, _modelName, -1,null,null);
         }
     }
 }

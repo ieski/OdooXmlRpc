@@ -6,6 +6,7 @@
         public string Type { get; set; }
         public string Help { get; set; }
         public string String { get; set; }
+        public object DefaultValue { get; set; } = null;
 
         private object _value;
 
@@ -15,12 +16,14 @@
             {
                 if (Type != "bool" && _value is bool && ((bool) _value) == false)
                 {
-                    return null;
+                    return DefaultValue;
                 }
-
                 return _value;
             }
-            set { _value = value; }
+            set
+            {
+                _value = value;
+            }
         }
 
         public bool? Changed { get; set; }

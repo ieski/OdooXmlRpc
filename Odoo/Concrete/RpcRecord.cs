@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using CookComputing.XmlRpc;
+using System.Collections.Generic;
 using System.Linq;
-using CookComputing.XmlRpc;
 
 namespace Odoo.Concrete
 {
@@ -25,12 +24,13 @@ namespace Odoo.Concrete
             }
             else
             {
-                _id = (int) id;
+                _id = (int)id;
             }
 
             if (id != null)
             {
                 _fieldsResult = new List<RpcField>();
+                if (fieldsTemplate == null) return;
                 foreach (var rpcField in fieldsTemplate)
                 {
                     _fieldsResult.Add(new RpcField
@@ -43,6 +43,7 @@ namespace Odoo.Concrete
                         Value = vals?[rpcField.FieldName]
                     });
                 }
+
             }
             else
             {
@@ -65,9 +66,10 @@ namespace Odoo.Concrete
             fieldAttribute.Value = value;
         }
 
-        public RpcField GetField(string field)
+        public RpcField GetField(string field, object defaultValue = null)
         {
             var fieldAttribute = _fieldsResult.FirstOrDefault(f => f.FieldName == field);
+            if (fieldAttribute != null) fieldAttribute.DefaultValue = defaultValue;
             return fieldAttribute;
         }
 
@@ -77,12 +79,12 @@ namespace Odoo.Concrete
 
             if (_id >= 0)
             {
-                foreach (var field in _fieldsResult.Where(f => (bool) f.Changed))
+                foreach (var field in _fieldsResult.Where(f => (bool)f.Changed))
                 {
                     values[field.FieldName] = field.Value;
                 }
 
-                _rpcConnection.Write(_model, new int[1] {_id}, values);
+                _rpcConnection.Write(_model, new int[1] { _id }, values);
             }
             else
             {

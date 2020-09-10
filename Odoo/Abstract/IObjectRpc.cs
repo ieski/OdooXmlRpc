@@ -10,17 +10,11 @@ namespace Odoo.Abstract
         int create(String dbName, int userId, string dbPwd, string model, string method, XmlRpcStruct fieldValues);
 
         [XmlRpcMethod("execute")]
-        int[] search(string dbName, int userId, string dbPwd, string model, string method, object[] filter, int offset, int limit);
+        int[] search(string dbName, int userId, string dbPwd, string model, string method, object[] filter, int offset, int limit, string order);
         
         [XmlRpcMethod("execute")]
-        int[] search(string dbName, int userId, string dbPwd, string model, string method, object[] filter);
-
-        [XmlRpcMethod("execute")]
-        object[] search_read(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] fields, int offset, int limit);
+        object[] search_read(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] fields, int offset, int limit, string order);
         
-        [XmlRpcMethod("execute")]
-        object[] search_read(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] fields);
-
         [XmlRpcMethod("execute")]
         object fields_get(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] attributes);
 
@@ -35,7 +29,7 @@ namespace Odoo.Abstract
 
         [XmlRpcMethod("execute")]
         bool unlink(string dbName, int userId, string dbPwd, string model, string method, int[] ids);
-
+        
         [XmlRpcMethod("exec_workflow")]
         bool exec_workflow(string dbName, int userId, string dbPwd, string model, string action, int ids);
 
