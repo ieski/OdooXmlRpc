@@ -96,5 +96,20 @@ namespace Odoo.Concrete
             return this;
         }
 
+        // 2020-09-08 added by Marc Trudel
+        /// <summary>
+        /// Add a list of fields in a string to the RpcContext so that only these fields are returned by the Execute.
+        /// Provides a different way of setting the columns
+        /// </summary>
+        /// <param name="rpcContext"></param>
+        /// <param name="StringFieldsList">CSV list of fields to return. Empty returns all columns</param>
+        static void AddStringFieldListToRpcContext(ref RpcContext rpcContext, string StringFieldsList)
+        {
+            string[] FieldNames = StringFieldsList.Split(',');
+            foreach (string FieldName in FieldNames)
+            {
+                rpcContext.AddField(FieldName.Trim());
+            }
+        }
     }
 }
