@@ -107,5 +107,18 @@ namespace Odoo.Concrete
 
             return value;
         }
+
+        // 2020-09-08 added by Marc Trudel 
+        public string ToCsvString()
+
+        {
+            var value = "";
+            foreach (var field in _fieldsResult)
+            {
+                value += $"{field.Value},";
+            }
+            value = value.Substring(0, value.Length - 1);     // remove last ,
+            return value;
+        }
     }
 }
