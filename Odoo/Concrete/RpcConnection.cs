@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using CookComputing.XmlRpc;
@@ -38,7 +39,7 @@ namespace Odoo.Concrete
                 }
 
                 // Log in and get user id
-                _rpcConnectionSchema.UserId = loginRpc.authenticate(_rpcConnectionSchema.DbName, _rpcConnectionSchema.DbUser, _rpcConnectionSchema.DbPassword,  new object() );
+                _rpcConnectionSchema.UserId = loginRpc.authenticate(_rpcConnectionSchema.DbName, _rpcConnectionSchema.DbUser, _rpcConnectionSchema.DbPassword, new object());
 
                 // Create proxy for Object operations
                 _objectRpc = XmlRpcProxyGen.Create<IObjectRpc>();
@@ -70,7 +71,7 @@ namespace Odoo.Concrete
             return _objectRpc.search(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search", filter, offset, limit, order);
         }
 
-        public object[] SearchAndRead(string model, object[] filter, object[] fields, int offset = 0, int limit = 0, string order="")
+        public object[] SearchAndRead(string model, object[] filter, object[] fields, int offset = 0, int limit = 0, string order = "")
         {
             return _objectRpc.search_read(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "search_read", filter, fields, offset, limit, order);
         }
@@ -99,7 +100,19 @@ namespace Odoo.Concrete
         {
             return _objectRpc.unlink(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, "unlink", ids);
         }
- 
+
+        public object CallMethod(string model, string method, object[] parameters, object[] parameters_kw = null)
+        {
+            if (parameters_kw == null)
+            {
+                return _objectRpc.call(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId,
+                    _rpcConnectionSchema.DbPassword, model, method, parameters);
+            }
+
+            return   _objectRpc.call(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId,
+                _rpcConnectionSchema.DbPassword, model, method, parameters, parameters_kw);
+        }
+
         public bool Execute_Workflow(string model, string action, int id)
         {
             return _objectRpc.exec_workflow(_rpcConnectionSchema.DbName, _rpcConnectionSchema.UserId, _rpcConnectionSchema.DbPassword, model, action, id);

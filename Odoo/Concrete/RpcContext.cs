@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Odoo.Concrete
 {
@@ -63,7 +64,7 @@ namespace Odoo.Concrete
 
             _rpcModel.AddFields(_fieldNames);
 
-            return _records = !read ? _rpcModel.Search(RpcFilter.ToArray(), offset,limit,order) : _rpcModel.SearchAndRead(RpcFilter.ToArray(), fieldsResult, offset, limit, order);
+            return _records = !read ? _rpcModel.Search(RpcFilter.ToArray(), offset, limit, order) : _rpcModel.SearchAndRead(RpcFilter.ToArray(), fieldsResult, offset, limit, order);
         }
 
         public List<RpcRecord> GetRecords()

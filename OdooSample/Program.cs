@@ -19,12 +19,17 @@ namespace OdooSample
 
             var odooConn = new RpcConnection(rpcConnnectionSettings);
 
+            var partner_1 = new RpcModel("res.partner", odooConn);
+           
+            var method_response = partner_1.CallMethod("find_or_create", new object[1] { "ssssssssss@gddd.com"});
+
+
             //res.partner - Write
             var partner = new RpcContext(odooConn, "res.partner");
 
-            partner.AddFields(new[] {"name", "phone", "email"});
-            
-            var results = partner.Execute(false,  order:"id desc");
+            partner.AddFields(new[] { "name", "phone", "email" });
+
+            var results = partner.Execute(false, order: "id desc");
             //var results = partner.Execute(false, offset:1, limit:2, order: "id desc");
             foreach (var result in results)
             {

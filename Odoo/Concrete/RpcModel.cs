@@ -25,10 +25,11 @@ using CookComputing.XmlRpc;
 
         public object GetFields(object[] filter)
         {
-            return _rpcConnection.GetFields(_modelName, filter , new object[] { "string", "help", "type" });
+            return _rpcConnection.GetFields(_modelName, filter, new object[] {"string", "help", "type"});
         }
 
-        public List<RpcRecord> SearchAndRead(object[] filter, List<RpcField> fieldsResult, int offset = 0, int limit = 0, string order="")
+        public List<RpcRecord> SearchAndRead(object[] filter, List<RpcField> fieldsResult, int offset = 0,
+            int limit = 0, string order = "")
         {
             var records = new List<RpcRecord>();
 
@@ -36,11 +37,12 @@ using CookComputing.XmlRpc;
 
             foreach (object entry in result)
             {
-                var vals = (XmlRpcStruct)entry;
-                var id = (int)vals["id"];
+                var vals = (XmlRpcStruct) entry;
+                var id = (int) vals["id"];
                 var record = new RpcRecord(_rpcConnection, _modelName, id, fieldsResult, vals);
                 records.Add(record);
             }
+
             return records;
         }
 
@@ -72,16 +74,16 @@ using CookComputing.XmlRpc;
         public void Remove(List<RpcRecord> records)
         {
             var toRemove = records
-                                    .Where(r => r.Id >= 0)
-                                    .Select(r => r.Id)
-                                    .ToArray();
+                .Where(r => r.Id >= 0)
+                .Select(r => r.Id)
+                .ToArray();
 
             _rpcConnection.Remove(_modelName, toRemove);
         }
 
         public void Remove(RpcRecord rpcRecord)
         {
-            Remove(new List<RpcRecord>() { rpcRecord });
+            Remove(new List<RpcRecord>() {rpcRecord});
         }
 
         public void Save(List<RpcRecord> records)
@@ -94,7 +96,12 @@ using CookComputing.XmlRpc;
 
         public void Save(RpcRecord rpcRecord)
         {
-            Save(new List<RpcRecord>() { rpcRecord });
+            Save(new List<RpcRecord>() {rpcRecord});
+        }
+
+        public object CallMethod(string method, object[] parameters,object[] parameters_kw = null)
+        {
+            return _rpcConnection.CallMethod(_modelName, method, parameters, parameters_kw);
         }
     }
 }
