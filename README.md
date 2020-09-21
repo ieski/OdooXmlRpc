@@ -135,3 +135,35 @@ namespace OdooSample
 }
 ```
 
+Call Method
+-------------------------
+- Source:
+
+```cs
+using Microsoft.Extensions.Configuration;
+using Odoo.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace OdooSample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+
+            var rpcConnnectionSettings = new RpcConnectionSetting();
+            config.GetSection("OdooConnection").Bind(rpcConnnectionSettings);
+
+            var odooConn = new RpcConnection(rpcConnnectionSettings);
+
+            var partner_1 = new RpcModel("res.partner", odooConn);
+            var method_response = partner_1.CallMethod("find_or_create", new object[1] { "ssssssssss@gddd.com"});
+        }
+    }
+}
+```
