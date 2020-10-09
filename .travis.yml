@@ -1,0 +1,7 @@
+language: csharp
+solution: hOdoo.sln
+mono: none
+dotnet: 3.0
+ 
+script:
+- dotnet build

@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Odoo.Concrete;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OdooSample
 {
@@ -19,9 +17,18 @@ namespace OdooSample
 
             var odooConn = new RpcConnection(rpcConnnectionSettings);
 
+
+            var rpcContext = new RpcContext(odooConn, "res.partner");
+
+            rpcContext
+                .AddField("id")
+                .AddField("name");
+
+            var data = rpcContext.Execute(false);
+
             var partner_1 = new RpcModel("res.partner", odooConn);
-           
-            var method_response = partner_1.CallMethod("find_or_create", new object[1] { "ssssssssss@gddd.com"});
+
+            var method_response = partner_1.CallMethod("find_or_create", new object[1] { "ssssssssss@gddd.com" });
 
 
             //res.partner - Write

@@ -52,7 +52,7 @@ namespace Odoo.Concrete
             catch (Exception e)
             {
                 _rpcConnectionSchema.UserId = -1;
-                return false;
+                throw new Exception(e.Message);
             }
         }
 
