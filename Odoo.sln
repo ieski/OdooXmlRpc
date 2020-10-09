@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.29318.209
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Odoo", "Odoo\Odoo.csproj", "{887067C2-F7CA-4CF1-896C-92A9E494A914}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OdooSample", "OdooSample\OdooSample.csproj", "{0754A463-58EA-4758-AB1A-D44BD54E1EED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OdooSample", "OdooSample\OdooSample.csproj", "{0754A463-58EA-4758-AB1A-D44BD54E1EED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2DBFAD04-ADF0-4614-9149-8FFCDBE7D916}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
