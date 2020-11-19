@@ -18,13 +18,21 @@ namespace OdooSample
             var odooConn = new RpcConnection(rpcConnnectionSettings);
 
 
+            RpcContext rpcContext1 = new RpcContext(odooConn, "res.partner");
+            rpcContext1
+                .RpcFilter
+                .Equal("id", 1);
+            IEnumerable<RpcRecord> data = rpcContext1.Execute(true, 0, limit: 1);
+
+
+
             var rpcContext = new RpcContext(odooConn, "res.partner");
 
             rpcContext
                 .AddField("id")
                 .AddField("name");
 
-            var data = rpcContext.Execute(false);
+            var data1 = rpcContext.Execute(false);
 
             var partner_1 = new RpcModel("res.partner", odooConn);
 

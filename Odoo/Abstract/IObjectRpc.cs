@@ -13,7 +13,7 @@ namespace Odoo.Abstract
         [XmlRpcMethod("execute")]
         int[] search(string dbName, int userId, string dbPwd, string model, string method, object[] filter, int offset, int limit, string order);
 
-        [XmlRpcMethod("execute_kw")]
+        [XmlRpcMethod("execute")]
         object[] search_read(string dbName, int userId, string dbPwd, string model, string method, object[] filter, object[] fields, int offset, int limit, string order);
 
         [XmlRpcMethod("execute")]
