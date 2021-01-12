@@ -40,7 +40,7 @@ namespace Odoo.Concrete
                         String = rpcField.String,
                         Help = rpcField.Help,
                         Changed = false,
-                        Value = vals?[rpcField.FieldName]
+                        Value = vals != null ? vals[rpcField.FieldName] : rpcField.Value
                     });
                 }
 
@@ -95,6 +95,18 @@ namespace Odoo.Concrete
 
                 _id = _rpcConnection.Create(_model, values);
             }
+        }
+
+        public XmlRpcStruct GetRecord()
+        {
+            var values = new XmlRpcStruct();
+
+            foreach (var field in _fieldsResult)
+            {
+                values[field.FieldName] = field.Value;
+            }
+
+            return values;
         }
 
         public override string ToString()
