@@ -5,14 +5,67 @@ Description
 -----------
 XmlRpc Web Service Client .NET is a C# implementation of XML-RPC, a popular protocol that uses XML over HTTP to implement remote procedure calls. This implementation can be used in .NET 4.6 This software was tested with Odoo ERP 8 and 11
 
+Support: One2Many or Many2Many 
+
+- (0, 0, values)
+    adds a new record created from the provided value dict.
+- (1, id, values)
+    updates an existing record of id id with the values in values. Can not be used in create().
+- (2, id, 0)
+    removes the record of id id from the set, then deletes it (from the database). Can not be used in create().
+- (3, id, 0)
+    removes the record of id id from the set, but does not delete it. Can not be used in create().
+- (4, id, 0)
+    adds an existing record of id id to the set.
+- (5, 0, 0)
+    removes all records from the set, equivalent to using the command 3 on every record explicitly. Can not be used in create().
+- (6, 0, ids)
+    replaces all existing records in the set by the ids list, equivalent to using the command 5 followed by a command 4 for each id in ids.
+
+```cs
+   var orderLine = new List<object>();
+
+    //Product 1
+    var product = GetSearchProductByDefaultCode(conn, "10.RF.091.00");
+
+    RpcRecord record = new RpcRecord(conn, "sale.order.line", -1, new List<RpcField>
+    {
+        new RpcField{FieldName = "name", Value = product.GetField("name").Value},
+        new RpcField{FieldName = "customer_lead", Value = 8},
+        new RpcField{FieldName = "price_unit", Value = 12.45},
+        new RpcField{FieldName = "product_uom_qty", Value = 5},
+        new RpcField{FieldName = "product_id", Value = product.Id},
+        new RpcField{FieldName = "tax_id", Value = product.GetField("taxes_id").Value},
+    });
+    orderLine.Add(new object[] { 0, 0, record.GetRecord() });
+
+
+    RpcRecord record = new RpcRecord(conn, "sale.order", -1, new List<RpcField>
+    {
+        new RpcField{FieldName = "company_id", Value = 1},
+        new RpcField{FieldName = "currency_id", Value = 31},
+        new RpcField{FieldName = "date_order", Value = "2021-01-12"},
+        new RpcField{FieldName = "name", Value = "Örnek Sipariş No:" + rnd.Next(1,10000).ToString()},
+        new RpcField{FieldName = "partner_id", Value = partner.Id},
+        new RpcField{FieldName = "partner_invoice_id", Value = partner.Id},
+        new RpcField{FieldName = "partner_shipping_id", Value = partner.Id},
+        new RpcField{FieldName = "picking_policy", Value = "one"},
+        new RpcField{FieldName = "pricelist_id", Value = 1},
+        new RpcField{FieldName = "warehouse_id", Value = 5},
+        new RpcField{FieldName = "state", Value = "sale"}, //Onaylı Sipariş ise
+        new RpcField{FieldName = "order_line", Value =  orderLine.ToArray() }
+    });
+```
+
+
 Features
 --------
-- Copyright: 2019 İsmail Eski ismaileski@gmail.com
+- Copyright: 2020 İsmail Eski ismaileski@gmail.com
 - Repository: https://github.com/ieski/OdooXmlRpc
 - License: LGPL 3
 - Language: C#, .NET 4.6
 - IDE: Visual Studio 2019
-- Version: v1.0.0
+- Version: v2.0.0
 
 Links
 -----

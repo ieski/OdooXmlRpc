@@ -34,7 +34,7 @@ namespace OdooSample
 
             var orderline = GetSaleOrderLine(conn);
 
-            
+
             RpcRecord record = new RpcRecord(conn, "sale.order", -1, new List<RpcField>
             {
                 new RpcField{FieldName = "company_id", Value = 1},
@@ -73,11 +73,7 @@ namespace OdooSample
                 new RpcField{FieldName = "product_id", Value = product.Id},
                 new RpcField{FieldName = "tax_id", Value = product.GetField("taxes_id").Value},
             });
-
-            orderLine.Add(
-                new object[] { 0, 0, record.GetRecord() }
-                );
-
+            orderLine.Add(new object[] { 0, 0, record.GetRecord() });
 
 
             //Ürün 2
@@ -92,10 +88,7 @@ namespace OdooSample
                 new RpcField{FieldName = "product_id", Value = product2.Id},
                 new RpcField{FieldName = "tax_id", Value = product2.GetField("taxes_id").Value},
             });
-
-            orderLine.Add(
-                new object[] { 0, 0, record2.GetRecord() }
-            );
+            orderLine.Add(new object[] { 0, 0, record2.GetRecord() });
 
             return orderLine;
         }
