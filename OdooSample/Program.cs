@@ -25,16 +25,14 @@ namespace OdooSample
 
         }
 
-
-
         //Sale Order - Oluşturma
         static RpcRecord WriteSaleOrder(RpcConnection conn)
         {
             //Partner
-            var partner = WritePartner(conn);
+            var partner = CreatePartner(conn);
             var rnd = new Random();
 
-            var orderline = OrderLine(conn);
+            var orderline = GetSaleOrderLine(conn);
 
             
             RpcRecord record = new RpcRecord(conn, "sale.order", -1, new List<RpcField>
@@ -59,12 +57,12 @@ namespace OdooSample
 
 
         //Sale Order Satırlarını Oluştur
-        static List<object> OrderLine(RpcConnection conn)
+        static List<object> GetSaleOrderLine(RpcConnection conn)
         {
             var orderLine = new List<object>();
 
             //Ürün 1
-            var product = GetProduct(conn, "10.RF.091.00");
+            var product = GetSearchProductByDefaultCode(conn, "10.RF.091.00");
 
             RpcRecord record = new RpcRecord(conn, "sale.order.line", -1, new List<RpcField>
             {
@@ -83,7 +81,7 @@ namespace OdooSample
 
 
             //Ürün 2
-            var product2 = GetProduct(conn, "10.RF.085.00");
+            var product2 = GetSearchProductByDefaultCode(conn, "10.RF.085.00");
 
             RpcRecord record2 = new RpcRecord(conn, "sale.order.line", -1, new List<RpcField>
             {
@@ -103,7 +101,7 @@ namespace OdooSample
         }
 
         //Ürün Arama
-        static RpcRecord GetProduct(RpcConnection conn, string defaultCode)
+        static RpcRecord GetSearchProductByDefaultCode(RpcConnection conn, string defaultCode)
         {
             var rpcContext = new RpcContext(conn, "product.product");
 
@@ -120,10 +118,10 @@ namespace OdooSample
         }
 
         // İş Ortağı Oluşturma
-        static RpcRecord WritePartner(RpcConnection conn)
+        static RpcRecord CreatePartner(RpcConnection conn)
         {
             //İl
-            var stateId = GetCountryState(conn, "İstanbul");
+            var stateId = GetCountryStateByName(conn, "İstanbul");
 
             //res.partner - Create
             RpcRecord record = new RpcRecord(conn, "res.partner", -1, new List<RpcField>
@@ -139,7 +137,7 @@ namespace OdooSample
         }
 
         //İl Arama
-        static int GetCountryState(RpcConnection conn, string stateName)
+        static int GetCountryStateByName(RpcConnection conn, string stateName)
         {
             var rpcContext = new RpcContext(conn, "res.country.state");
 
