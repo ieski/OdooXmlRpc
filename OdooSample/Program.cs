@@ -8,6 +8,9 @@ namespace OdooSample
 {
     class Program
     {
+        // Multi Company Ortamlarda hangi şirket üzerinde işlem yapılacak ise o dikkate alınmalı
+        private static int _companyId = 1;
+
         static void Main(string[] args)
         {
             IConfiguration config = new ConfigurationBuilder()
@@ -32,14 +35,13 @@ namespace OdooSample
             var partner = CreatePartner(conn);
             var rnd = new Random();
 
-            var orderline = GetSaleOrderLine(conn);
-
-
+            var orderLine = GetSaleOrderLine(conn);
+        
             RpcRecord record = new RpcRecord(conn, "sale.order", -1, new List<RpcField>
             {
-                new RpcField{FieldName = "company_id", Value = 1},
+                new RpcField{FieldName = "company_id", Value = _companyId },
                 new RpcField{FieldName = "currency_id", Value = 31},
-                new RpcField{FieldName = "date_order", Value = "2021-01-12"},
+                new RpcField{FieldName = "date_order", Value = "2021-01-28"},
                 new RpcField{FieldName = "name", Value = "Örnek Sipariş No:" + rnd.Next(1,10000).ToString()},
                 new RpcField{FieldName = "partner_id", Value = partner.Id},
                 new RpcField{FieldName = "partner_invoice_id", Value = partner.Id},
@@ -48,7 +50,7 @@ namespace OdooSample
                 new RpcField{FieldName = "pricelist_id", Value = 1},
                 new RpcField{FieldName = "warehouse_id", Value = 5},
                 new RpcField{FieldName = "state", Value = "sale"}, //Onaylı Sipariş ise
-                new RpcField{FieldName = "order_line", Value =  orderline.ToArray() }
+                new RpcField{FieldName = "order_line", Value =  orderLine.ToArray() }
             });
 
             record.Save();
@@ -90,6 +92,21 @@ namespace OdooSample
             });
             orderLine.Add(new object[] { 0, 0, record2.GetRecord() });
 
+
+            //Ürün 3
+            var product3 = GetSearchProductByDefaultCode(conn, "10.RF.014.00");
+
+            RpcRecord record3 = new RpcRecord(conn, "sale.order.line", -1, new List<RpcField>
+            {
+                new RpcField{FieldName = "name", Value = product3.GetField("name").Value},
+                new RpcField{FieldName = "customer_lead", Value = 3},
+                new RpcField{FieldName = "price_unit", Value = 165.75},
+                new RpcField{FieldName = "product_uom_qty", Value = 8},
+                new RpcField{FieldName = "product_id", Value = product3.Id},
+                new RpcField{FieldName = "tax_id", Value = product3.GetField("taxes_id").Value},
+            });
+            orderLine.Add(new object[] { 0, 0, record3.GetRecord() });
+
             return orderLine;
         }
 
@@ -99,7 +116,11 @@ namespace OdooSample
             var rpcContext = new RpcContext(conn, "product.product");
 
             rpcContext
-                .RpcFilter.Equal("default_code", defaultCode);
+                .RpcFilter
+                .Or()
+                .Equal("company_id", _companyId)
+                .Equal("company_id", false)
+                .Equal("default_code", defaultCode);
 
             rpcContext
                 .AddField("id")
@@ -110,9 +131,34 @@ namespace OdooSample
             return data.FirstOrDefault();
         }
 
+
         // İş Ortağı Oluşturma
         static RpcRecord CreatePartner(RpcConnection conn)
         {
+            // Ref alanından kontak ara
+            var rpcContext = new RpcContext(conn, "res.partner");
+
+            rpcContext
+                .RpcFilter
+                .Or() // burada tanımlı OR operatörü odoo'nun normal kullanımında olduğu gibi önündeki koşulu birbirine bağlar belirtilmez ise AND operatörü gibi çalışır
+                .Equal("company_id", _companyId)
+                .Equal("company_id", false)
+                .Equal("ref", "TO9930914");
+
+            /*
+             * Yukarıdaki koşulun açılımı
+             * if (company_id == 1 or company_id == false) and ref= "TO9930914")
+             */
+
+            rpcContext
+                .AddField("id");
+            var data = rpcContext.Execute(true, limit: 1);
+            var partner =  data.FirstOrDefault();
+            if (partner != null)
+            {
+                return partner;
+            }
+
             //İl
             var stateId = GetCountryStateByName(conn, "İstanbul");
 
