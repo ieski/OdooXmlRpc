@@ -12,14 +12,14 @@
 
         public object Value
         {
-            get
-            {
-                if (Type != "bool" && _value is bool && ((bool) _value) == false)
-                {
-                    return DefaultValue;
-                }
-                return _value;
+            get { 
+                if (Type != "bool" && Type != "boolean" && _value is bool && ((bool)_value) == false) 
+                { 
+                    return DefaultValue; 
+                } 
+                return _value; 
             }
+            
             set
             {
                 _value = value;
