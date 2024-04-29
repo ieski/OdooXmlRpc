@@ -1,3 +1,4 @@
+[![Board Status](https://dev.azure.com/ismaileski/65c54787-ec0a-4209-85e3-3d5a24e5aa4e/30223ee4-a388-4a0e-b6e0-2060e15e0f91/_apis/work/boardbadge/f5f99146-e5da-42eb-a940-aca3c4a70350)](https://dev.azure.com/ismaileski/65c54787-ec0a-4209-85e3-3d5a24e5aa4e/_boards/board/t/30223ee4-a388-4a0e-b6e0-2060e15e0f91/Microsoft.RequirementCategory)
 OdooXmlRpc .Net
 ================
 
